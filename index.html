@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Enciclopédia Valeriana</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=IM+Fell+English:ital@0;1&family=Kalam:wght@300;400;700&display=swap');
+:root{--ink:#2b1a10;--gold:#8a6333;--paper:#d8bd83;--book-w:min(92vw,1120px);--book-h:min(74vh,700px)}
+*{box-sizing:border-box} html,body{height:100%;margin:0} body{overflow:hidden;background:radial-gradient(ellipse at center,#46331f 0,#1d160f 58%,#0c0906 100%);color:var(--ink);font-family:'Kalam','Segoe Print','Bradley Hand',cursive}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.025),transparent 25%,rgba(0,0,0,.12) 70%),repeating-linear-gradient(0deg,rgba(255,255,255,.01) 0 1px,transparent 1px 4px);pointer-events:none}
+.stage{height:100%;display:grid;place-items:center;perspective:2200px;padding:3vh 3vw}.book{position:relative;width:var(--book-w);height:var(--book-h);transform-style:preserve-3d;filter:drop-shadow(0 28px 28px #000a)}
+.spread{position:absolute;inset:0;border-radius:8px;transform-style:preserve-3d}.cover{position:absolute;top:0;right:0;width:50%;height:100%;border-radius:5px;transform-style:preserve-3d;z-index:20;transform-origin:left center;transition:transform 1.45s cubic-bezier(.2,.72,.14,1);box-shadow:0 12px 30px #000b}
+.cover-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:5px;overflow:hidden}
+.cover-front{background:#080d10;box-shadow:inset 8px 0 16px #0007}.cover-front img{width:100%;height:100%;display:block;object-fit:fill}
+.cover-back{transform:rotateY(180deg);background:radial-gradient(ellipse at 55% 45%,#252019 0,#151713 58%,#090d0d 100%);box-shadow:inset -18px 0 28px #0008,inset 0 0 0 7px #8a6333,inset 0 0 0 10px #17110c}
+.cover-back:before{content:'❦';position:absolute;inset:8%;border:2px solid #8a6333;display:grid;place-items:center;color:#a77b45;font-size:48px;opacity:.72}
+.cover-content{display:none}
+.book.open .cover{transform:rotateY(-178deg)}
+.book.past-cover .cover{opacity:0;pointer-events:none;z-index:-2;transition:transform 1.45s cubic-bezier(.2,.72,.14,1),opacity .25s}
+.spread{display:flex;overflow:hidden;background:#d5b97e;box-shadow:inset 0 0 35px #5e3b1d88;opacity:0;transition:opacity .25s .65s}.book.open .spread{opacity:1}.page{position:relative;width:50%;height:100%;padding:7% 6.5%;background:#c9a86b;overflow:hidden}.left{background-position:left center}.right{background-position:right center}.left:after,.right:after{content:"";position:absolute;top:0;bottom:0;width:11%;pointer-events:none}.left:after{right:0;background:linear-gradient(90deg,transparent,#51351c38)}.right:after{left:0;background:linear-gradient(90deg,#51351c38,transparent)}
+.page-content{position:relative;z-index:2;height:100%}.chapter-kicker{font-family:'Cinzel';font-size:12px;letter-spacing:.18em;text-align:center}.page h2{font:600 clamp(22px,3vw,38px)/1.15 'Cinzel';text-align:center;margin:9px 0 24px}.orn{font-size:24px;text-align:center;margin:4px 0 22px}.toc{margin:5% 3% 0;padding:0;list-style:none}.toc li{margin:0 0 clamp(11px,2vh,20px);font-size:clamp(14px,1.55vw,20px);border-bottom:1px dotted #5b3d26;padding-bottom:6px;cursor:pointer;transition:.2s}.toc li:hover{transform:translateX(5px);color:#6f3f17}.toc b{font-family:'Cinzel';font-weight:600}.folio{position:absolute;bottom:3%;left:0;right:0;text-align:center;font-size:13px}.note{font-size:clamp(14px,1.5vw,19px);line-height:1.55;text-align:justify}.sketch{margin:12% auto 6%;width:62%;aspect-ratio:1;border:1px solid #72503177;border-radius:50%;display:grid;place-items:center;font-size:64px;opacity:.72}.marginalia{position:absolute;right:2%;bottom:8%;font-style:italic;transform:rotate(-4deg);opacity:.75;font-size:13px;max-width:36%}
+.turn{position:absolute;z-index:15;top:0;width:50%;height:100%;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.5,.08,.2,.98);pointer-events:none}.turn.right-turn{right:0;transform-origin:left center}.turn.flipping{transform:rotateY(-180deg)}.turn .face{position:absolute;inset:0;backface-visibility:hidden;padding:7% 6.5%;background-image:url('paginas_ref.jpg');background-size:200% 100%;box-shadow:inset 0 0 26px #5a391c55}.turn .front{background-position:right center}.turn .back{transform:rotateY(180deg);background-position:left center}.turn .face:after{content:"";position:absolute;inset:0;box-shadow:inset 16px 0 22px #0001;pointer-events:none}
+.controls{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:12px;z-index:50;opacity:0;transition:.4s}.book.open~.controls{opacity:1}.btn{appearance:none;border:1px solid #9d7648;background:#24170fdd;color:#d8bd83;border-radius:999px;padding:9px 16px;font-family:'Cinzel';cursor:pointer;box-shadow:0 5px 14px #0007}.btn:hover{background:#382418}.hint{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);color:#d4b98c;font-size:13px;opacity:.75;z-index:50;transition:.4s}.book.open~.hint{opacity:0;pointer-events:none}.corner{position:absolute;right:0;bottom:0;width:80px;height:80px;z-index:12;cursor:pointer;background:linear-gradient(135deg,transparent 48%,#7c5a3266 49%,#c5a66d99);clip-path:polygon(100% 0,100% 100%,0 100%);opacity:.65}.corner:hover{opacity:1}
+/* V10 — envelhecimento adicional do papel */
+.page::before,.turn .face::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;mix-blend-mode:multiply;opacity:.48;background:
+radial-gradient(circle at 13% 17%,rgba(83,48,18,.22) 0 1px,transparent 2px),
+radial-gradient(circle at 78% 31%,rgba(70,38,12,.18) 0 1.4px,transparent 2.4px),
+radial-gradient(circle at 39% 73%,rgba(93,53,18,.14) 0 1px,transparent 2px),
+radial-gradient(ellipse at 8% 52%,rgba(100,58,22,.12),transparent 25%),
+radial-gradient(ellipse at 91% 84%,rgba(92,48,14,.15),transparent 21%),
+repeating-linear-gradient(7deg,rgba(87,57,28,.035) 0 1px,transparent 1px 7px),
+repeating-linear-gradient(93deg,rgba(255,255,255,.045) 0 1px,transparent 1px 11px);}
+.page{box-shadow:inset 0 0 30px rgba(70,37,13,.24),inset 0 0 90px rgba(99,56,19,.09)}
+.page-content{font-family:'Kalam','Segoe Print','Bradley Hand',cursive;letter-spacing:.012em;text-shadow:0 .25px 0 rgba(69,35,13,.35)}
+.note{font-family:'Kalam','Segoe Print','Bradley Hand',cursive;font-size:clamp(15px,1.55vw,20px);line-height:1.58}
+.toc li{font-family:'Kalam','Segoe Print','Bradley Hand',cursive;font-size:clamp(15px,1.62vw,21px)}
+.marginalia{font-family:'Kalam','Segoe Print','Bradley Hand',cursive}
+.folio{font-family:'Kalam','Segoe Print','Bradley Hand',cursive}
+/* Títulos permanecem formais, como cabeçalhos caligrafados do compêndio. */
+.chapter-kicker,.page h2,.toc b{font-family:'Cinzel',Georgia,serif}
+
+/* V12 — textura baseada diretamente na referência enviada */
+.page::before,.turn .face::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background-image:url('pagina_referencia.png');background-repeat:no-repeat;background-size:cover;background-position:center;opacity:.38;mix-blend-mode:multiply;filter:sepia(.28) contrast(1.08) saturate(.72);}
+.page::after{z-index:1!important;}
+.page.left::before{transform:scaleX(-1);}
+.page-content{z-index:3!important;}
+.page{background-color:#c9a86b!important;background-image:radial-gradient(circle at 10% 18%,rgba(64,32,12,.17) 0 1px,transparent 2px),radial-gradient(circle at 78% 73%,rgba(75,39,15,.15) 0 2px,transparent 3px),linear-gradient(90deg,rgba(72,39,17,.18),transparent 8%,transparent 92%,rgba(72,39,17,.22))!important;background-size:73px 89px,121px 137px,100% 100%!important;}
+.turn .face{background-color:#c9a86b!important;background-image:linear-gradient(90deg,rgba(72,39,17,.16),transparent 9%,transparent 91%,rgba(72,39,17,.18))!important;}
+
+@media(max-width:760px){:root{--book-w:96vw;--book-h:70vh}.page{padding:8% 5%}.toc li{font-size:12px}.page h2{font-size:19px}.note{font-size:12px}.cover h1{font-size:31px}}
+
+/* V11 — papel inspirado no manuscrito de referência: manchas, vincos e desgaste irregular */
+.page::after,.turn .face::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.58;mix-blend-mode:multiply;background:
+ radial-gradient(circle at 9% 12%,rgba(58,28,8,.38) 0 1px,transparent 2px),
+ radial-gradient(circle at 17% 68%,rgba(45,21,7,.28) 0 2px,transparent 3px),
+ radial-gradient(circle at 82% 19%,rgba(49,23,7,.34) 0 1.5px,transparent 2.5px),
+ radial-gradient(circle at 91% 77%,rgba(42,18,5,.32) 0 2px,transparent 3px),
+ radial-gradient(ellipse at 14% 7%,rgba(104,58,19,.18) 0 7%,transparent 22%),
+ radial-gradient(ellipse at 86% 91%,rgba(83,42,11,.20) 0 8%,transparent 25%),
+ radial-gradient(ellipse at 5% 54%,rgba(88,44,13,.14),transparent 18%),
+ linear-gradient(88deg,transparent 0 48%,rgba(80,43,16,.08) 49%,transparent 50%),
+ linear-gradient(2deg,transparent 0 62%,rgba(79,42,15,.07) 62.3%,transparent 62.8%);}
+.page{filter:saturate(.82) sepia(.08);}
+.left{border-radius:5px 0 0 5px}.right{border-radius:0 5px 5px 0}
+
+
+/* V13 — textura aplicada DIRETAMENTE no fundo da folha (não em pseudo-elemento). */
+.page,
+.turn .face{
+  background-color:#d0ae70 !important;
+  background-image:
+    linear-gradient(rgba(210,174,111,.34),rgba(210,174,111,.34)),
+    url('pagina_referencia.png') !important;
+  background-size:cover !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  background-blend-mode:normal,multiply !important;
+}
+/* Evita que versões antigas da textura cubram a imagem principal. */
+.page::before,.turn .face::before{
+  background:
+    radial-gradient(circle at 11% 16%,rgba(55,25,7,.32) 0 1.2px,transparent 2.2px),
+    radial-gradient(circle at 76% 31%,rgba(58,27,8,.25) 0 1.5px,transparent 2.6px),
+    radial-gradient(circle at 35% 78%,rgba(62,29,8,.23) 0 1.2px,transparent 2.2px),
+    radial-gradient(ellipse at 7% 48%,rgba(83,40,11,.18),transparent 23%),
+    radial-gradient(ellipse at 92% 85%,rgba(78,35,8,.20),transparent 24%) !important;
+  opacity:.72 !important;
+  mix-blend-mode:multiply !important;
+  z-index:1 !important;
+  filter:none !important;
+  transform:none !important;
+}
+.page.left::before{transform:none !important;}
+.page::after,.turn .face::after{
+  opacity:.32 !important;
+  z-index:2 !important;
+}
+.page-content{z-index:4 !important;}
+
+
+/* V14 — usa DIRETAMENTE a imagem de referência como base das folhas, incorporada no HTML */
+.page, .turn .face {
+  background-color:#d2b279 !important;
+  background-image:
+    linear-gradient(rgba(232,214,177,.14), rgba(232,214,177,.14)),
+    url('image_01_fb664307b5d1.webp') !important;
+  background-repeat:no-repeat !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-blend-mode:soft-light, multiply !important;
+  box-shadow: inset 0 0 32px rgba(60,34,12,.22), inset 0 0 95px rgba(80,48,18,.12) !important;
+}
+.page.left, .turn .back { background-position:left center !important; }
+.page.right, .turn .front { background-position:right center !important; }
+.page::before, .turn .face::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.22;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(50,24,8,.34) 0 1.5px, transparent 2.8px),
+    radial-gradient(circle at 81% 28%, rgba(50,24,8,.28) 0 1.8px, transparent 3px),
+    radial-gradient(circle at 68% 82%, rgba(50,24,8,.22) 0 1.3px, transparent 2.3px),
+    linear-gradient(90deg, rgba(53,28,10,.16), transparent 12%, transparent 88%, rgba(53,28,10,.18));
+  mix-blend-mode:multiply;
+}
+.page::after, .turn .face::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  background:
+    radial-gradient(ellipse at 8% 8%, rgba(80,40,15,.16), transparent 22%),
+    radial-gradient(ellipse at 90% 86%, rgba(80,40,15,.18), transparent 24%),
+    radial-gradient(ellipse at 50% 100%, rgba(100,55,18,.10), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.04), transparent 18%, transparent 82%, rgba(0,0,0,.04));
+  mix-blend-mode:multiply;
+  opacity:.65;
+  box-shadow: inset 0 0 30px rgba(70,35,12,.15);
+}
+.page-content { position:relative; z-index:3 !important; }
+
+
+/* V15 — textura envelhecida inspirada na referência, sem usar a página literal */
+.page, .turn .face {
+  background-color:#d6b47c !important;
+  background-image:
+    linear-gradient(rgba(243,229,198,.10), rgba(243,229,198,.10)),
+    url('image_02_510beb004176.webp') !important;
+  background-repeat:no-repeat !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-blend-mode:soft-light, normal !important;
+  box-shadow: inset 0 0 42px rgba(66,36,13,.18), inset 0 0 120px rgba(92,54,19,.09) !important;
+  filter:saturate(.90) sepia(.08) !important;
+}
+.page.left, .turn .back { background-position:left center !important; }
+.page.right, .turn .front { background-position:right center !important; }
+/* remove o aspecto de imagem literal e mantém só o desgaste */
+.page::before, .turn .face::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 11% 17%, rgba(76,44,18,.18) 0 1.4px, transparent 2.6px),
+    radial-gradient(circle at 80% 27%, rgba(76,44,18,.15) 0 1.7px, transparent 2.8px),
+    radial-gradient(circle at 72% 78%, rgba(76,44,18,.12) 0 1.3px, transparent 2.2px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 7px),
+    linear-gradient(90deg, rgba(70,39,15,.12), transparent 10%, transparent 90%, rgba(70,39,15,.14));
+  mix-blend-mode:multiply;
+  opacity:.55;
+}
+.page::after, .turn .face::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 7% 10%, rgba(87,48,18,.12), transparent 18%),
+    radial-gradient(ellipse at 92% 88%, rgba(87,48,18,.14), transparent 20%),
+    radial-gradient(ellipse at 48% 100%, rgba(105,63,24,.08), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.03), transparent 16%, transparent 84%, rgba(0,0,0,.04));
+  mix-blend-mode:multiply;
+  opacity:.7;
+}
+.page-content { position:relative; z-index:3 !important; }
+
+
+/* V16 — páginas refeitas para combinar com o pergaminho da segunda imagem enviada */
+.page {
+  background-color:#d8c29a !important;
+  box-shadow: inset 0 0 22px rgba(63,35,12,.10), inset 0 0 80px rgba(84,53,23,.05) !important;
+  filter:none !important;
+}
+.page.left {
+  background-image:url('image_03_9064ecd9e7f7.webp') !important;
+  background-size:100% 100% !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+}
+.page.right {
+  background-image:url('image_04_33c2461b96d2.webp') !important;
+  background-size:100% 100% !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+}
+.turn .face {
+  background-color:#d8c29a !important;
+  background-size:100% 100% !important;
+  background-repeat:no-repeat !important;
+  box-shadow: inset 0 0 16px rgba(63,35,12,.08) !important;
+}
+.turn .front {
+  background-image:url('image_04_33c2461b96d2.webp') !important;
+}
+.turn .back {
+  background-image:url('image_03_9064ecd9e7f7.webp') !important;
+}
+/* remove as manchas fortes das versões anteriores */
+.page::before, .page::after, .turn .face::before, .turn .face::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.page::before, .turn .face::before {
+  z-index:0;
+  background:linear-gradient(90deg, rgba(70,40,15,.06), transparent 10%, transparent 90%, rgba(70,40,15,.08));
+}
+.page::after, .turn .face::after {
+  z-index:1;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 14%, transparent 86%, rgba(0,0,0,.03));
+}
+.page-content { position:relative; z-index:3 !important; }
+.sketch { border-color:rgba(100,74,46,.32) !important; opacity:.55; }
+.left { border-radius:8px 0 0 8px !important; }
+.right { border-radius:0 8px 8px 0 !important; }
+
+
+/* V17 — remove o círculo placeholder de todas as páginas */
+.sketch{display:none !important;}
+
+
+/* V18 — estilos para o texto corrido do Capítulo I */
+.entry{height:100%;display:flex;flex-direction:column;gap:10px}
+.entry h3{margin:8px 0 2px;font:600 clamp(16px,1.8vw,24px)/1.15 'Cinzel';letter-spacing:.02em}
+.entry p{margin:0 0 8px;font-size:clamp(12px,1.15vw,16px);line-height:1.42;text-align:justify}
+.entry p.small{font-size:clamp(11.5px,1.05vw,15px);line-height:1.36}
+.entry blockquote{margin:6px 4% 8px;padding:0 0 0 12px;border-left:2px solid rgba(80,50,22,.28);font-family:'IM Fell English',serif;font-size:clamp(13px,1.2vw,17px);font-style:italic;line-height:1.35}
+.entry .epigraph{margin:6px 6% 10px;text-align:center;border:none;padding:0;font-size:clamp(15px,1.35vw,19px)}
+.entry .orn{margin:0 0 6px}
+.entry .marginalia-inline{margin-top:auto;align-self:flex-end;font-style:italic;opacity:.72;font-size:12px;transform:rotate(-3deg);max-width:44%;text-align:right}
+
+
+/* V19 — ilustração em esboço ao fim do Capítulo I */
+.map-page{height:100%;display:flex;align-items:center;justify-content:center;}
+.map-page img{max-width:100%;max-height:92%;object-fit:contain;display:block;opacity:.82;mix-blend-mode:multiply;filter:sepia(.18) contrast(1.05);}
+.map-page.leftimg img{transform:translateX(2%);}
+.map-page.rightimg img{transform:translateX(-2%);}
+
+
+/* V21 — junta as duas metades do mapa no centro da dupla de páginas */
+.map-page{
+    height:100%;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+}
+.map-page.leftimg{
+    justify-content:flex-end;
+}
+.map-page.rightimg{
+    justify-content:flex-start;
+}
+.map-page img{
+    max-width:100%;
+    max-height:92%;
+    object-fit:contain;
+    display:block;
+    opacity:.82;
+    mix-blend-mode:multiply;
+    filter:sepia(.18) contrast(1.05);
+}
+.map-page.leftimg img{
+    transform:translateX(32%);
+}
+.map-page.rightimg img{
+    transform:translateX(-32%);
+}
+
+
+/* V22 — mapa maior e unido na lombada */
+.map-page{
+    height:100%;
+    width:100%;
+    display:flex;
+    align-items:center;
+    overflow:visible;
+}
+.map-page.leftimg{
+    justify-content:flex-end;
+}
+.map-page.rightimg{
+    justify-content:flex-start;
+}
+.map-page img{
+    width:auto !important;
+    height:94% !important;
+    max-width:none !important;
+    max-height:none !important;
+    object-fit:contain;
+    display:block;
+    opacity:.84;
+    mix-blend-mode:multiply;
+    filter:sepia(.18) contrast(1.08);
+}
+.map-page.leftimg img{
+    transform:translateX(47%) scale(1.38) !important;
+    transform-origin:center right;
+}
+.map-page.rightimg img{
+    transform:translateX(-47%) scale(1.38) !important;
+    transform-origin:center left;
+}
+
+
+/* V25 — bestiário regional do Capítulo III */
+.creature-sketch{height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.creature-sketch img{width:94%;height:94%;object-fit:contain;opacity:.88;mix-blend-mode:multiply;filter:sepia(.25) contrast(1.12)}
+.creature-entry .type-line{font-family:'Cinzel',serif;font-size:clamp(11px,1vw,14px);letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px;text-align:center}
+.creature-entry .ability{margin:12px 0;padding:8px 12px;border-top:1px solid rgba(74,49,25,.42);border-bottom:1px solid rgba(74,49,25,.42)}
+.creature-entry .field-note{font-style:italic;text-align:center;margin-top:auto;padding:10px 12px}
+
+
+/* V27 — esboços incorporados visualmente ao próprio pergaminho */
+.creature-sketch{
+    position:absolute !important;
+    inset:2.5% 2.5% 5.5% 2.5% !important;
+    height:auto !important;
+    width:auto !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+    pointer-events:none;
+}
+.creature-sketch img{
+    width:118% !important;
+    height:118% !important;
+    max-width:none !important;
+    max-height:none !important;
+    object-fit:contain !important;
+    opacity:.72 !important;
+    mix-blend-mode:multiply !important;
+    filter:sepia(1) saturate(.38) contrast(1.18) brightness(1.16) !important;
+    transform:scale(1.10);
+}
+/* Faz o fundo claro da própria arte desaparecer visualmente no papel */
+.page:has(.creature-sketch) .creature-sketch{
+    mix-blend-mode:multiply;
+}
+
+
+/* V28 — correções de enquadramento do Capítulo III */
+.page:has(.creature-sketch){
+    overflow:hidden !important;
+}
+.creature-sketch{
+    position:absolute !important;
+    inset:5.5% 5.5% 8% 5.5% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+}
+.creature-sketch img{
+    width:100% !important;
+    height:100% !important;
+    max-width:100% !important;
+    max-height:100% !important;
+    object-fit:contain !important;
+    transform:none !important;
+    opacity:.68 !important;
+    mix-blend-mode:multiply !important;
+    filter:sepia(1) saturate(.34) contrast(1.14) brightness(1.18) !important;
+}
+
+/* Garante que as entradas do bestiário caibam inteiramente na página */
+.page:has(.creature-entry){
+    overflow:hidden !important;
+}
+.creature-entry{
+    box-sizing:border-box !important;
+    height:100% !important;
+    min-height:0 !important;
+    gap:5px !important;
+    padding-bottom:18px !important;
+}
+.creature-entry .chapter-kicker{
+    margin-bottom:1px !important;
+}
+.creature-entry h2{
+    margin:3px 0 5px !important;
+    font-size:clamp(24px,2.7vw,38px) !important;
+    line-height:1.04 !important;
+}
+.creature-entry .type-line{
+    margin:4px 0 8px !important;
+    font-size:clamp(10px,.9vw,13px) !important;
+}
+.creature-entry p{
+    margin:0 0 6px !important;
+    font-size:clamp(11px,1.02vw,14px) !important;
+    line-height:1.30 !important;
+}
+.creature-entry .ability{
+    margin:5px 0 6px !important;
+    padding:6px 10px !important;
+    font-size:clamp(11px,1.0vw,14px) !important;
+    line-height:1.28 !important;
+}
+.creature-entry .field-note{
+    margin-top:2px !important;
+    padding:5px 8px 0 !important;
+    font-size:clamp(10.5px,.95vw,13px) !important;
+    line-height:1.25 !important;
+}
+
+
+/* V33 approved Grookey line */
+.creature-sketch.approved-grass{position:absolute!important;inset:4.5% 4.5% 7.5%!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}.creature-sketch.approved-grass img{width:100%!important;height:100%!important;object-fit:contain!important;opacity:.88!important;mix-blend-mode:multiply!important;filter:sepia(.12) contrast(1.02)!important;transform:none!important}
+
+/* V34 — Popplio / Brionne / Primarina no mesmo padrão de esboço */
+.creature-sketch.approved-water{
+    position:absolute !important;
+    inset:4.5% 4.5% 7.5% 4.5% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+}
+.creature-sketch.approved-water img{
+    width:100% !important;
+    height:100% !important;
+    max-width:100% !important;
+    max-height:100% !important;
+    object-fit:contain !important;
+    opacity:.88 !important;
+    mix-blend-mode:multiply !important;
+    filter:sepia(.12) contrast(1.02) !important;
+    transform:none !important;
+}
+
+
+/* V35 — novas linhas evolutivas em esboço */
+.creature-sketch.approved-batch{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-batch img{
+ width:100% !important; height:100% !important; object-fit:contain !important;
+ opacity:.88 !important; mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important; transform:none !important;
+}
+
+
+/* V36 — Skiddo/Gogoat e Litleo/Pyroar */
+.creature-sketch.approved-v36{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-v36 img{
+ width:100% !important; height:100% !important; object-fit:contain !important;
+ opacity:.88 !important; mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important; transform:none !important;
+}
+
+
+/* V37 — Phantump/Trevenant + Helioptile/Heliolisk */
+.creature-sketch.approved-v37{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-v37 img{
+ width:100% !important; height:100% !important;
+ max-width:100% !important; max-height:100% !important;
+ object-fit:contain !important;
+ opacity:.88 !important; mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important; transform:none !important;
+}
+
+
+/* V38 — Inkay/Malamar + Skrelp/Dragalge */
+.creature-sketch.approved-v38{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-v38 img{
+ width:100% !important; height:100% !important; max-width:100% !important; max-height:100% !important;
+ object-fit:contain !important; opacity:.88 !important; mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important; transform:none !important;
+}
+
+
+/* V39 — Bergmite/Avalugg + Honedge/Doublade/Aegislash */
+.creature-sketch.approved-v39{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-v39 img{
+ width:100% !important; height:100% !important; max-width:100% !important; max-height:100% !important;
+ object-fit:contain !important; opacity:.88 !important; mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important; transform:none !important;
+}
+
+
+/* V40 — Noibat/Noivern */
+.creature-sketch.approved-v40{
+ position:absolute !important; inset:4.5% 4.5% 7.5% 4.5% !important;
+ display:flex !important; align-items:center !important; justify-content:center !important;
+ overflow:hidden !important;
+}
+.creature-sketch.approved-v40 img{
+ width:100% !important; height:100% !important;
+ max-width:100% !important; max-height:100% !important;
+ object-fit:contain !important; opacity:.88 !important;
+ mix-blend-mode:multiply !important;
+ filter:sepia(.12) contrast(1.02) !important;
+ transform:none !important;
+}
+
+
+.notes-entry{height:100%;box-sizing:border-box;}
+.note-page-label{text-align:center;font-style:italic;opacity:.68;margin:-4px 0 8px;}
+.traveler-note{
+ width:100%; height:62%; box-sizing:border-box; resize:none;
+ border:0; border-top:1px solid rgba(73,48,24,.24); border-bottom:1px solid rgba(73,48,24,.18);
+ outline:none; background:
+ repeating-linear-gradient(to bottom,transparent 0,transparent 27px,rgba(82,54,27,.13) 28px);
+ padding:8px 5px; font:inherit; line-height:28px; color:inherit;
+}
+.add-note-page{
+ display:block; margin:12px auto 0; padding:7px 13px;
+ border:1px solid rgba(73,48,24,.45); border-radius:3px;
+ background:rgba(120,82,39,.08); color:inherit; font:inherit; cursor:pointer;
+}
+.add-note-page:hover{background:rgba(120,82,39,.16);}
+
+</style>
+</head>
+<body>
+<div class="stage">
+  <main class="book" id="book" aria-label="Enciclopédia Valeriana">
+    <section class="spread">
+      <article class="page left"><div class="page-content" id="leftPage"></div></article>
+      <article class="page right"><div class="page-content" id="rightPage"></div><div class="corner" id="corner" title="Virar página"></div></article>
+    </section>
+    <section class="cover" id="cover" role="button" tabindex="0" aria-label="Abrir Enciclopédia Valeriana">
+      <div class="cover-face cover-front"><img src="image_05_9c6c0c580c92.webp" alt="Capa da Enciclopédia Valeriana"></div>
+      <div class="cover-face cover-back"></div>
+    </section>
+  </main>
+  <div class="controls"><button class="btn" id="prev">‹ Voltar</button><button class="btn" id="index">Sumário</button><button class="btn" id="closeBook">Fechar livro</button><button class="btn" id="next">Avançar ›</button></div>
+  <div class="hint">Clique na capa para abrir o livro</div>
+</div>
+<script>
+const chapters=[
+['Capítulo I','Das Terras de Valoria'],
+['Capítulo II','Das Sete Casas'],
+['Capítulo III','Das Criaturas Conhecidas'],
+['Capítulo IV','Dos Vínculos'],
+['Capítulo V','Da Arte do Combate'],
+['Capítulo VI','O Vínculo'],
+['Capítulo VII','Registros do Viajante']];
+
+const chapterStarts = [0,5,10,44,46,49,51];
+const summary=`<div class="chapter-kicker">ENCICLOPÉDIA VALERIANA</div><h2>Sumário</h2><div class="orn">❦</div><ul class="toc">${chapters.map((c,i)=>`<li data-jump="${chapterStarts[i]}"><b>${c[0]}</b> — ${c[1]}</li>`).join('')}</ul><p class="marginalia">Que este volume sirva aos que ousam conhecer Valoria.</p><div class="folio">I</div>`;
+
+const spreads = [
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h2>Das Terras de Valoria</h2><div class="orn">☙ ❦ ❧</div><blockquote class="epigraph">“Conhecer a terra é conhecer aqueles que nela habitam; homens e criaturas são apenas diferentes ramos de uma mesma história.”</blockquote><h3>Da Região de Valoria</h3><p>Valoria é uma vasta terra de campos férteis, florestas antigas, altas montanhas e extensas costas, habitada desde tempos anteriores aos primeiros registros de nossos escribas.</p><p>Durante grande parte de sua história conhecida, suas terras foram divididas entre diversos povos e pequenos senhores. Com o passar dos séculos, estes territórios deram origem às <b>Sete Grandes Casas</b>, cujos domínios formam aquilo que hoje reconhecemos como o Reino de Valoria.</p><div class="folio">2</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Da Região de Valoria</h3><p>No coração dessas terras encontra-se <b>Aurelion, a Cidade da Coroa</b>, sede da Casa Auremont e do trono valeriano. Erguida sobre uma grande colina e protegida por muralhas, Aurelion tornou-se o maior centro de comércio, conhecimento e governo conhecido na região.</p><p>Contudo, aqueles que conhecem apenas Aurelion pouco conhecem de Valoria.</p><p class="small">Ao norte encontram-se florestas tão antigas que algumas árvores parecem preceder qualquer reino humano. Ao oeste erguem-se montanhas de pedra onde poucas estradas conseguem sobreviver aos invernos. Grandes planícies ocupam o interior, enquanto rios atravessam o reino até alcançarem os portos e mares de Avelonne.</p><p>E em todas essas terras vivem as criaturas às quais damos o nome de <b>Pokémon</b>.</p><div class="folio">3</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Dos Homens e dos Pokémon</h3><p>Não existe registro confiável de uma época em que os homens de Valoria tenham vivido sem Pokémon.</p><p>Eles trabalham nossos campos, carregam viajantes, protegem povoados e acompanham caçadores através das matas. Algumas espécies são criadas entre os homens há incontáveis gerações; outras jamais aceitaram nossa presença.</p><p>Há aqueles que os tratam como animais.</p><p>Há aqueles que os veneram como manifestações da própria natureza.</p><p>Há aqueles que os transformam em instrumentos de guerra.</p><div class="folio">4</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Dos Homens e dos Pokémon</h3><p>Ainda assim, certos homens e Pokémon desenvolvem uma união difícil de explicar através do simples treinamento. Parecem compreender um ao outro sem palavras e demonstram uma confiança que não pode ser obtida pela força.</p><p>Aqueles capazes de formar tais laços passaram a ser conhecidos como <b>Vínculos</b>.</p><p>Muito já foi escrito acerca deles. Pouco, entretanto, pode ser afirmado com certeza.</p><h3>Das Sete Terras</h3><p class="small">Embora submetida à mesma Coroa, Valoria permanece dividida entre <b>sete grandes territórios</b>, cada qual administrado por uma das Grandes Casas.</p><p class="small"><b>Auremont</b> governa as terras centrais e a cidade de Aurelion. <b>Virelune</b> guarda as vastas florestas do norte. <b>Montclair</b> ocupa as regiões montanhosas e seus cavaleiros são conhecidos por atravessar os céus montados em Pokémon alados.</p><div class="folio">5</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Das Sete Terras</h3><p class="small"><b>Bellavaux</b> domina as grandes planícies, famosas por seus campos, criadores e estábulos.</p><p class="small"><b>Rocheval</b> mantém as montanhas rochosas do oeste e possui longa tradição militar.</p><p class="small"><b>Avelonne</b> controla grande parte dos rios, portos e rotas marítimas responsáveis pelo comércio entre as terras.</p><p class="small">Por fim, <b>Elaronne</b> ocupa uma região marcada por antigas ruínas cuja origem permanece objeto de debate entre estudiosos.</p><p>Embora diferentes em costumes, crenças e tradições, durante gerações as Sete Casas mantiveram entre si uma paz por vezes frágil, mas duradoura.</p><h3>Dos Tempos Antigos</h3><p class="small">Muito do que sabemos sobre a Valoria anterior às Grandes Casas provém de ruínas, fragmentos de escritos e histórias transmitidas oralmente.</p><div class="folio">6</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Dos Tempos Antigos</h3><p>Entre as mais antigas encontra-se a história de <b>duas grandes criaturas</b> que teriam protegido estas terras antes do surgimento dos primeiros reinos.</p><p>Uma era associada ao Sol. A outra, à Noite.</p><p class="small">Textos encontrados nas ruínas orientais dão-lhes diferentes nomes, mas os mais recorrentes são <b>Solarius</b> e <b>Noctyra</b>.</p><p class="small"><b>Solarius</b> é descrito como portador da luz, da vida e da criação. <b>Noctyra</b>, por sua vez, aparece associado à noite, à morte e à transformação.</p><p class="small">Curiosamente, os registros mais antigos não os descrevem como inimigos. Pelo contrário, parecem representar duas forças que necessitavam uma da outra.</p><div class="folio">7</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Dos Tempos Antigos</h3><blockquote>“Onde nasce a vida, haverá mudança.<br>Onde houver fim, haverá novamente princípio.”</blockquote><p>Se tais criaturas realmente existiram ou pertencem apenas às histórias dos antigos, nenhum estudioso conseguiu provar.</p><h3>Do Presente Estado de Valoria</h3><p>No presente ano de <b>742 da Era de Valoria</b>, sinais inquietantes têm sido registrados em diferentes regiões do reino.</p><p>Migrações de Pokémon não seguem seus caminhos habituais. Espécies normalmente dóceis demonstram comportamento agressivo. Caçadores relatam florestas estranhamente silenciosas.</p><div class="folio">8</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO I</div><h3>Do Presente Estado de Valoria</h3><p>Mais preocupantes são os relatos de <b>desaparecimentos de Pokémon</b>.</p><p>Inicialmente considerados incidentes isolados, casos semelhantes passaram a ser registrados em diferentes territórios. Nem mesmo animais pertencentes a famílias nobres parecem estar livres do fenômeno.</p><p>As causas permanecem desconhecidas.</p><p>As Grandes Casas passaram a vigiar suas fronteiras com maior atenção, enquanto antigos desentendimentos voltam a ocupar os salões de seus senhores.</p><p>Por ora, a Coroa sustenta que não existe motivo para temor.</p><blockquote>“Quando os Pokémon abandonam uma terra antes dos homens, raramente o fazem sem razão.”</blockquote><div class="folio">9</div></div>`
+],
+[
+`<div class="map-page leftimg"><img src="image_06_81a964951600.webp" alt="Esboço cartográfico de Valoria"></div><div class="folio">10</div>`,
+`<div class="map-page rightimg"><img src="image_07_0eca8e87639a.webp" alt="Esboço cartográfico de Valoria"></div><div class="folio">11</div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h2>Das Sete Casas</h2><div class="orn">☙ ❦ ❧</div><blockquote class="epigraph">“Sete estandartes erguem-se sobre Valoria; diferentes em cor e costume, mas todos sob o mesmo céu.”</blockquote><p>Desde a consolidação da Coroa, as terras de Valoria são confiadas a <b>sete Grandes Casas</b>. Cada uma governa segundo tradições próprias, moldadas pelas terras que habita e pelas criaturas com as quais aprendeu a conviver.</p><p>Seus senhores juram lealdade à Coroa de Aurelion, embora conservem grande autoridade dentro de seus domínios. Estradas, tributos, guardas, criação de Pokémon e proteção das aldeias recaem, em grande parte, sobre essas famílias.</p><p>Conhecê-las é compreender por que Valoria jamais poderia ser descrita como uma única terra.</p><div class="folio">12</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Auremont</h3><p><b>Terras Centrais — A Coroa</b></p><p>A Casa Auremont governa o coração de Valoria e ocupa o trono de <b>Aurelion, a Cidade da Coroa</b>. Seus domínios encontram-se onde muitas das principais estradas do reino se cruzam, razão pela qual mercadores, mensageiros e viajantes de todas as Casas passam frequentemente por suas terras.</p><p>Os Auremont consideram a unidade do reino seu maior dever. Seus cavaleiros protegem as estradas reais, enquanto escribas e conselheiros mantêm registros de tributos, tratados e juramentos.</p><p>Por estar no centro de Valoria, Aurelion recebeu costumes de todas as regiões. É possível encontrar em seus mercados produtos de Avelonne, montarias de Bellavaux e minérios vindos das montanhas.</p><p class="marginalia-inline">“Onde convergem as estradas, repousa a Coroa.”</p><div class="folio">13</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Virelune</h3><p><b>Florestas do Norte — Os Guardiões Verdes</b></p><p>Ao norte estendem-se os domínios de Virelune, cobertos por florestas tão antigas que muitos caminhos desaparecem sob raízes e folhas antes que possam ser registrados em mapas.</p><p>A presença humana é menor ali do que em qualquer outro grande território. Aldeias são erguidas com cautela e a derrubada de árvores antigas costuma exigir autorização dos guardiões locais.</p><p>Os Virelune sustentam que uma floresta não pertence àquele que nela ergue uma cerca. Seus caçadores e batedores são conhecidos pela habilidade de atravessar matas sem perturbar os Pokémon selvagens.</p><p>Estrangeiros por vezes confundem essa cautela com hostilidade. Os habitantes do norte diriam apenas que certas fronteiras não foram traçadas por homens.</p><div class="folio">14</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Montclair</h3><p><b>Altas Montanhas — Os Cavaleiros dos Céus</b></p><p>Montclair governa as grandes cadeias montanhosas, onde o ar é frio, as trilhas estreitas e muitas aldeias encontram-se separadas por desfiladeiros que levariam dias para serem contornados.</p><p>Por necessidade, seus habitantes desenvolveram estreita relação com Pokémon capazes de voar. Mensagens que demorariam semanas pelas estradas podem atravessar as montanhas em poucas horas.</p><p>Seus cavaleiros alados servem como mensageiros, exploradores e sentinelas. Em tempos de tempestade, também são responsáveis por localizar viajantes perdidos e levar provisões a povoados isolados.</p><p>Entre os Montclair, enxergar longe é considerado virtude tão importante quanto possuir uma espada firme.</p><div class="folio">15</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Bellavaux</h3><p><b>Grandes Planícies — Os Criadores</b></p><p>As terras de Bellavaux são formadas por extensos campos, colinas suaves e estradas abertas. Ali se encontram alguns dos maiores rebanhos e estábulos conhecidos de Valoria.</p><p>Por gerações, seus criadores estudaram alimentação, temperamento e criação de Pokémon utilizados no trabalho rural e como montarias. Muitas famílias mantêm linhagens de criaturas companheiras há tanto tempo quanto conseguem recordar.</p><p>Feiras de animais e colheitas atraem mercadores de diversas regiões. Para Bellavaux, a prosperidade de uma casa mede-se menos pela altura de suas muralhas e mais pela saúde de seus campos.</p><p>É comum ouvir entre seus habitantes que paciência amansa aquilo que a força apenas assusta.</p><div class="folio">16</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Rocheval</h3><p><b>Montanhas do Oeste — A Casa de Ferro</b></p><p>Rocheval mantém fortalezas entre as montanhas rochosas do oeste, região rica em pedra e minério, mas pobre em terras cultiváveis. Seus povoados cresceram próximos a minas, passagens e fortalezas.</p><p>A tradição militar possui grande importância entre os Rocheval. Soldados treinam ao lado de Pokémon desde jovens, não apenas para a guerra, mas para escoltar caravanas e proteger caminhos contra criaturas perigosas.</p><p>Força, disciplina e resistência são virtudes frequentemente exaltadas em suas histórias. Isso lhes rendeu fama de severidade entre as demais Casas.</p><p>Os próprios Rocheval preferem dizer que a montanha ensina uma verdade simples: aquilo que não resiste ao inverno não verá a primavera.</p><div class="folio">17</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Avelonne</h3><p><b>Rios e Costa — Os Senhores das Rotas</b></p><p>Avelonne governa grande parte dos rios navegáveis e da costa valeriana. Seus portos recebem pescadores, mercadores e embarcações vindas de terras que muitos habitantes do interior conhecem apenas por histórias.</p><p>O comércio tornou suas cidades particularmente diversas. Sal, peixe, tecidos, madeira, metais e outros bens atravessam seus cais antes de seguirem pelas estradas e rios.</p><p>Seus navegadores criaram forte vínculo com Pokémon aquáticos, empregados na pesca, no transporte e no auxílio a embarcações durante águas perigosas.</p><p>Para Avelonne, uma estrada termina onde começa o mar; uma rota, entretanto, pode continuar muito além do horizonte.</p><div class="folio">18</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Casa Elaronne</h3><p><b>Terras Orientais — Os Guardiões das Ruínas</b></p><p>Elaronne é talvez a menos compreendida das Grandes Casas. Seus domínios encontram-se próximos a ruínas cuja construção antecede os registros das atuais famílias nobres.</p><p>Estudiosos, astrônomos e escribas são recebidos com maior frequência ali do que em muitas cortes. Fragmentos de inscrições antigas são preservados cuidadosamente, sobretudo aqueles que mencionam criaturas associadas ao Sol, à Noite e às forças da natureza.</p><p>Essa dedicação aos tempos antigos fez surgir incontáveis rumores sobre a Casa. Alguns a acusam de guardar conhecimentos que deveriam pertencer à Coroa; seus senhores afirmam que certos escritos simplesmente ainda não foram compreendidos.</p><p>Em Elaronne, uma ruína raramente é considerada vazia. Mesmo pedras silenciosas podem conservar memória.</p><div class="folio">19</div></div>`
+],
+[
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Da Coroa e dos Juramentos</h3><p>Embora cada Casa possua leis, tradições e interesses próprios, todas reconhecem a autoridade da Coroa de Aurelion. Em troca, espera-se que o soberano preserve as estradas entre os territórios, julgue disputas entre nobres e convoque as Casas quando o reino enfrentar ameaça comum.</p><p>Essa união nunca significou ausência de rivalidade. Questões de fronteira, comércio, antigas ofensas e direitos sobre rios ou passagens montanhosas já provocaram inúmeras disputas.</p><p>Até o presente, tais conflitos foram resolvidos por tratados, casamentos, compensações ou pela intervenção da Coroa.</p><p>É prudente recordar que as Sete Casas não são sete partes idênticas de um mesmo reino. São sete histórias antigas que, por escolha ou necessidade, aprenderam a caminhar lado a lado.</p><div class="folio">20</div></div>`,
+`<div class="entry"><div class="chapter-kicker">CAPÍTULO II</div><h3>Dos Sinais Recentes</h3><p>Nos últimos meses, mensageiros relatam maior movimento de guardas nas fronteiras das Casas. O desaparecimento de Pokémon e as alterações observadas entre criaturas selvagens despertaram desconfiança mesmo entre antigos aliados.</p><p>Rocheval reforçou algumas passagens do oeste. Virelune tornou mais cuidadosa a entrada de estrangeiros em determinadas florestas. Mercadores de Avelonne relatam atrasos, enquanto cavaleiros de Montclair têm sido vistos com maior frequência sobre estradas distantes de suas montanhas.</p><p>Nada disso constitui, por si só, ruptura dos juramentos que sustentam Valoria.</p><p>Contudo, um reino formado por sete estandartes depende de algo mais frágil que muralhas: depende da confiança de que nenhum deles será erguido contra os outros.</p><blockquote>“Uma casa pode sobreviver à perda de pedras. Poucas sobrevivem à perda da confiança.”</blockquote><div class="folio">21</div></div>`
+],
+[
+`<div class="creature-sketch"><img src="image_08_b2733dfdb6d1.webp" alt="Esboços da forma regional de Chimchar"></div><div class="folio">22</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Chimchar de Valeria</h2><div class="type-line">Fogo · Aço</div><p>Encontrado sobretudo nas proximidades de vilas de ferreiros e regiões vulcânicas, este Chimchar desenvolveu uma curiosa afinidade com pedras e metais aquecidos.</p><p>Placas metálicas naturais cobrem partes de seus braços, pernas e cauda. Acredita-se que o calor constante de seu corpo ajude a endurecê-las à medida que cresce. A chama sobre sua cabeça é mais intensa que a de exemplares comuns e, quando agitado, pode adquirir brilho quase branco.</p><div class="ability"><b>Forja Ígnea.</b> O calor de seus golpes de Fogo fortalece temporariamente suas placas defensivas, enquanto ataques de Aço tornam-se mais perigosos após seu corpo atingir altas temperaturas.</div><p>Apesar da aparência resistente, jovens Chimchar dessa forma continuam curiosos e inquietos. Ferreiros de algumas aldeias os consideram bons presságios para uma nova forja.</p><div class="field-note">“Pequeno como uma brasa; teimoso como o ferro.”</div><div class="folio">23</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Monferno de Valeria</h2><div class="type-line">Fogo · Aço</div><p>Ao evoluir, o metal incorporado ao corpo torna-se mais definido e resistente. As placas dos braços e pernas passam a proteger regiões utilizadas com frequência durante o combate, enquanto sua chama cresce em tamanho e temperatura.</p><p>Monferno desta variedade são frequentemente vistos perto de forjas, cavernas quentes e encostas vulcânicas. Parecem procurar deliberadamente rochas ricas em minério e fontes de calor intenso.</p><div class="ability"><b>Forja Ígnea.</b> Quanto mais aquecido seu corpo, mais firmes se tornam suas proteções naturais. Em batalha, alterna movimentos rápidos com golpes pesados, utilizando fogo e metal como partes de um mesmo estilo.</div><p>Seu temperamento também se torna mais disciplinado. Há relatos de Monferno observando ferreiros durante horas, como se compreendessem que martelo, fogo e paciência podem transformar matéria bruta.</p><div class="field-note">“A chama cresce. O metal aprende sua forma.”</div><div class="folio">24</div></div>`,
+`<div class="creature-sketch"><img src="image_09_21d65e11a445.webp" alt="Esboços da forma regional de Monferno"></div><div class="folio">25</div>`
+],
+[
+`<div class="creature-sketch"><img src="image_10_c7ba4fcd5fab.webp" alt="Esboços da forma regional de Infernape"></div><div class="folio">26</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Infernape de Valeria</h2><div class="type-line">Fogo · Aço</div><p>Infernape de Valeria representa a manifestação completa da relação entre chama e metal observada em suas formas anteriores. As placas naturais que cobrem seu corpo parecem ter sido moldadas pelo próprio calor que produz.</p><p>Seu domínio sobre as chamas é extraordinário. Exemplares experientes conseguem concentrar o fogo da cauda até que ele assuma uma forma longa e densa, semelhante a uma lâmina ardente. Não se trata de metal verdadeiro, mas de fogo comprimido e conduzido com precisão.</p><div class="ability"><b>Forja Ígnea.</b> O calor produzido durante o combate reforça suas defesas metálicas e aumenta a força de seus ataques de Aço. Quanto mais intensa a batalha, mais brilhantes se tornam suas placas.</div><p>Histórias de Rocheval falam de Infernape capazes de cortar obstáculos em chamas para abrir passagem durante incêndios e batalhas. Conseguir controlar completamente a lâmina da cauda é considerado sinal de grande experiência.</p><div class="field-note">“Mais que fogo, uma lâmina. Mais que metal, uma vontade.”</div><div class="folio">27</div></div>`
+],
+[
+`<div class="creature-sketch approved-grass"><img src="image_11_847df178958a.webp" alt="Esboços de Grookey de Valeria"></div><div class="folio">28</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Grookey de Valeria</h2><div class="type-line">PLANTA · FADA</div><p>Grookey de Valeria vive nas florestas antigas, onde aprende desde cedo que a música é uma forma de se comunicar com a natureza.</p><p>Seu pequeno instrumento, feito de galhos de árvores ancestrais, produz sons capazes de acalmar Pokémon selvagens e fazer flores desabrocharem.</p><div class="ability"><b>Sintonia Natural.</b> Sua música fortalece a energia vegetal ao redor e responde com maior intensidade quando luta ao lado de um companheiro.</div><div class="field-note">“Pequenas notas, grandes histórias.”</div><div class="folio">29</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Thwackey de Valeria</h2><div class="type-line">PLANTA · FADA</div><p>Thwackey de Valeria percorre cidades e florestas como músico itinerante, carregando dois bastões talhados de madeira encantada.</p><p>Seus ritmos amplificam a energia das plantas e podem liderar pequenos grupos por trilhas onde viajantes normalmente se perderiam.</p><div class="ability"><b>Ritmo da Floresta.</b> Ao golpear seus bastões em compasso, espalha pelo solo uma vibração que faz a vegetação responder.</div><div class="field-note">“Cada batida faz a floresta responder.”</div><div class="folio">30</div></div>`,
+`<div class="creature-sketch approved-grass"><img src="image_12_0adfa39cc6a0.webp" alt="Esboços de Thwackey de Valeria"></div><div class="folio">31</div>`
+],
+[
+`<div class="creature-sketch approved-grass"><img src="image_13_20c28c466daf.webp" alt="Esboços de Rillaboom de Valeria"></div><div class="folio">32</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Rillaboom de Valeria</h2><div class="type-line">PLANTA · FADA</div><p>Rillaboom de Valeria é reverenciado como guardião das florestas ancestrais. Seu enorme tambor, esculpido de uma árvore sagrada, tornou-se símbolo de tradição.</p><p>Quando toca, plantas próximas parecem acompanhar seu ritmo. Há relatos de clareiras inteiras florescendo após longas apresentações.</p><div class="ability"><b>Harmonia Ancestral.</b> O som de seu tambor amplia a força de técnicas de Planta e Fada e desperta a vegetação ao redor.</div><div class="field-note">“Enquanto eu tocar, a floresta viverá.”</div><div class="folio">33</div></div>`
+],
+
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Popplio de Valeria</h2><div class="type-line">ÁGUA · FANTASMA</div><p>Popplio de Valeria vive em portos antigos e ruínas costeiras. Marinheiros costumam considerá-lo um pequeno mensageiro das águas e das embarcações que não retornaram.</p><p>As bolhas que produz possuem um brilho frio e parecem guardar ecos distantes de vozes e cantos marítimos.</p><div class="ability"><b>Névoa Ancestral.</b> Em mares cobertos por neblina, suas técnicas de Água ganham força e seus movimentos tornam-se difíceis de acompanhar.</div><div class="field-note">“Pequenas bolhas, grandes histórias.”</div><div class="folio">34</div></div>`,
+`<div class="creature-sketch approved-water"><img src="image_14_828c9a2bca6f.webp" alt="Esboços de Popplio de Valeria"></div><div class="folio">35</div>`
+],
+[
+`<div class="creature-sketch approved-water"><img src="image_15_4477429753f4.webp" alt="Esboços de Brionne de Valeria"></div><div class="folio">36</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Brionne de Valeria</h2><div class="type-line">ÁGUA · FANTASMA</div><p>Brionne de Valeria transforma água e névoa em danças que lembram antigos ritos marítimos realizados sob a luz da lua.</p><p>Suas apresentações deixam rastros de espuma e pequenas luzes, criando a impressão de que outras figuras dançam ao seu redor.</p><div class="ability"><b>Véu das Profundezas.</b> Cria cortinas de névoa e água que confundem perseguidores e ocultam seus companheiros.</div><div class="field-note">“O mar lembra. E eu canto por ele.”</div><div class="folio">37</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Primarina de Valeria</h2><div class="type-line">ÁGUA · FANTASMA</div><p>Primarina de Valeria é considerada uma aparição sagrada por diversos povos costeiros. Sua voz atravessa grandes extensões de água como um lamento distante.</p><p>Antigos registros a descrevem como guia de embarcações perdidas e guardiã de lugares onde o oceano tomou construções humanas.</p><div class="ability"><b>Canto Espiritual.</b> Sua canção mistura água e energia espectral, envolvendo o campo em uma melodia semelhante ao som distante das marés.</div><div class="field-note">“As ondas nunca esquecem. Eu também não.”</div><div class="folio">38</div></div>`,
+`<div class="creature-sketch approved-water"><img src="image_16_69c356220a01.webp" alt="Esboços de Primarina de Valeria"></div><div class="folio">39</div>`
+],
+[
+`<div class="creature-sketch approved-batch"><img src="image_17_939cbcf655a0.webp" alt="Esboços de Fletchling de Valeria"></div><div class="folio">40</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Fletchling de Valeria</h2><div class="type-line">VOADOR · AÇO</div><p>Fletchling de Valeria vive nas torres e muralhas das cidades. É criado desde cedo para transportar pequenas mensagens entre vilas, castelos e postos avançados.</p><p>Suas penas são mais rígidas que as de seus parentes comuns e apresentam partículas metálicas naturais, adaptação associada às regiões montanhosas.</p><div class="ability"><b>Asas do Mensageiro.</b> Sua resistência e precisão em voo permitem atravessar longas distâncias mesmo sob ventos fortes.</div><div class="field-note">“Pequenas asas, grandes distâncias.”</div><div class="folio">41</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Fletchinder de Valeria</h2><div class="type-line">FOGO · AÇO</div><p>Fletchinder de Valeria é conhecido como mensageiro militar e batedor de campo. O calor produzido por seu corpo aquece suas penas metálicas.</p><p>É frequentemente visto treinando em bandos e executando manobras rápidas entre muralhas, torres e desfiladeiros.</p><div class="ability"><b>Correio das Chamas.</b> Durante voos prolongados, suas penas aquecidas tornam seus movimentos mais velozes e seus ataques mais agressivos.</div><div class="field-note">“Entre o céu e a guerra, nossa presença chega primeiro.”</div><div class="folio">42</div></div>`,
+`<div class="creature-sketch approved-batch"><img src="image_18_3357752e60c2.webp" alt="Esboços de Fletchinder de Valeria"></div><div class="folio">43</div>`
+],
+[
+`<div class="creature-sketch approved-batch"><img src="image_19_b7548f93556c.webp" alt="Esboços de Talonflame de Valeria"></div><div class="folio">44</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Talonflame de Valeria</h2><div class="type-line">FOGO · AÇO</div><p>Talonflame de Valeria é reverenciado como o Falcão de Guerra, símbolo de coragem e domínio dos céus. Suas asas possuem lâminas naturais formadas por penas endurecidas.</p><p>Foi utilizado durante gerações em reconhecimento aéreo e ataques rápidos contra alvos estratégicos.</p><div class="ability"><b>Falcão de Guerra.</b> Ao mergulhar em alta velocidade, aquece as penas metálicas das asas até que cortem o ar como lâminas incandescentes.</div><div class="field-note">“O céu pertence aos que ousam avançar.”</div><div class="folio">45</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Scatterbug de Valeria</h2><div class="type-line">INSETO · FANTASMA</div><p>Scatterbug de Valeria habita jardins de ruínas antigas e alimenta-se de líquens e musgos que crescem sobre pedras centenárias.</p><p>Os padrões de seu corpo lembram fragmentos de vitrais antigos, característica que levou estudiosos a relacioná-lo a templos abandonados.</p><div class="ability"><b>Memória Errante.</b> Sua presença reage a locais antigos, tornando-se mais intensa próximo de ruínas e objetos carregados de história.</div><div class="field-note">“Pequenas asas, grandes memórias.”</div><div class="folio">46</div></div>`,
+`<div class="creature-sketch approved-batch"><img src="image_20_ef2b15f22cab.webp" alt="Esboços de Scatterbug de Valeria"></div><div class="folio">47</div>`
+],
+[
+`<div class="creature-sketch approved-batch"><img src="image_21_0e9b7e2322d4.webp" alt="Esboços de Spewpa de Valeria"></div><div class="folio">48</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Spewpa de Valeria</h2><div class="type-line">INSETO · FANTASMA</div><p>Spewpa de Valeria envolve o corpo em fibras e fragmentos de tecidos encontrados em ruínas, templos e antigas catedrais.</p><p>Cada camada acrescentada ao casulo parece conservar pequenos vestígios do lugar onde foi encontrada.</p><div class="ability"><b>Casulo dos Votos.</b> Enquanto permanece imóvel, sua cobertura absorve energia espectral do ambiente e fortalece sua resistência.</div><div class="field-note">“Envolto pelo passado, protegido pelas histórias.”</div><div class="folio">49</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Vivillon de Valeria</h2><div class="type-line">INSETO · FANTASMA</div><p>Vivillon de Valeria possui asas semelhantes a grandes vitrais. Seus desenhos variam conforme a região, mas frequentemente lembram símbolos encontrados em construções antigas.</p><p>À noite, atravessa ruínas e florestas silenciosas refletindo a luz da lua em padrões que parecem mudar conforme o observador se aproxima.</p><div class="ability"><b>Mensageiro das Almas.</b> As escamas de suas asas dispersam luz e energia espectral, produzindo imagens ilusórias semelhantes a reflexos de vitrais.</div><div class="field-note">“Mais que um inseto, um mensageiro.”</div><div class="folio">50</div></div>`,
+`<div class="creature-sketch approved-batch"><img src="image_22_04257389c75b.webp" alt="Esboços de Vivillon de Valeria"></div><div class="folio">51</div>`
+],
+[
+`<div class="creature-sketch approved-v36"><img src="image_23_839f8819e6a3.webp" alt="Esboços de Skiddo de Valeria"></div><div class="folio">52</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Skiddo de Valeria</h2><div class="type-line">PLANTA · PEDRA</div><p>Skiddo de Valeria vive em encostas rochosas e trilhas de montanha, alimentando-se de musgos e líquens que crescem entre as pedras.</p><p>Seu corpo é mais resistente que o de outras populações, apresentando pequenas formações rochosas que ajudam a manter o equilíbrio em terrenos íngremes.</p><div class="ability"><b>Broto das Montanhas.</b> Suas patas e placas naturais oferecem grande estabilidade em encostas, permitindo atravessar caminhos onde outras montarias hesitariam.</div><div class="field-note">“Pequenos passos também constroem grandes caminhos.”</div><div class="folio">53</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Gogoat de Valeria</h2><div class="type-line">PLANTA · PEDRA</div><p>Gogoat de Valeria é reverenciado como símbolo de resistência e estabilidade nas regiões montanhosas.</p><p>Suas grandes formações rochosas e chifres pesados permitem atravessar montanhas nevadas, desfiladeiros e terrenos perigosos. É utilizado por exploradores, cavaleiros e mensageiros.</p><div class="ability"><b>Guardião das Alturas.</b> Sua força e equilíbrio aumentam em terreno rochoso, tornando-o uma das montarias mais confiáveis das montanhas de Valoria.</div><div class="field-note">“Mais que um caminho, ele carrega histórias.”</div><div class="folio">54</div></div>`,
+`<div class="creature-sketch approved-v36"><img src="image_24_428c37af67e4.webp" alt="Esboços de Gogoat de Valeria"></div><div class="folio">55</div>`
+],
+[
+`<div class="creature-sketch approved-v36"><img src="image_25_ce3ff415fe86.webp" alt="Esboços de Litleo de Valeria"></div><div class="folio">56</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Litleo de Valeria</h2><div class="type-line">FOGO · FADA</div><p>Litleo de Valeria nasce entre planícies ensolaradas e jardins reais. Desde pequeno demonstra presença marcante e forte instinto de liderança.</p><p>Sua juba flamejante reage ao humor e à determinação do filhote, brilhando com maior intensidade quando protege alguém em quem confia.</p><div class="ability"><b>Filhote Nobre.</b> Sua chama responde ao vínculo com seus aliados, tornando-se mais viva quando luta para protegê-los.</div><div class="field-note">“Pequenas chamas, grandes sonhos.”</div><div class="folio">57</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Pyroar de Valeria</h2><div class="type-line">FOGO · FADA</div><p>Pyroar de Valeria é associado às casas nobres e aos antigos símbolos de autoridade do reino. Sua juba flamejante assemelha-se a uma coroa.</p><p>Apesar da aparência imponente, exemplares bem treinados são conhecidos por sua lealdade e por protegerem territórios, famílias e companheiros com ferocidade.</p><div class="ability"><b>Leão Real.</b> Sua presença inspira aliados próximos, enquanto a juba incandescente intensifica seus golpes de Fogo e Fada.</div><div class="field-note">“Um rugido que ilumina.”</div><div class="folio">58</div></div>`,
+`<div class="creature-sketch approved-v36"><img src="image_26_0065ad9c9edc.webp" alt="Esboços de Pyroar de Valeria"></div><div class="folio">59</div>`
+],
+[
+`<div class="creature-sketch approved-v37"><img src="image_27_547573800082.webp" alt="Esboços de Phantump de Valeria"></div><div class="folio">60</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Phantump de Valeria</h2><div class="type-line">PLANTA · PEDRA</div><p>Phantump de Valeria nasce entre troncos antigos que começaram a se petrificar. Fragmentos de pedra envolvem partes de seu corpo, enquanto folhas e musgos brotam entre as fissuras.</p><p>Costuma permanecer próximo de ruínas tomadas pela floresta, onde sua aparência permite que se confunda com raízes, pedras e madeira envelhecida.</p><div class="ability"><b>Broto de Pedra.</b> Seu corpo combina madeira e minerais, oferecendo resistência incomum enquanto permanece próximo de vegetação e terreno rochoso.</div><div class="field-note">“Pequenos fragmentos, grandes histórias.”</div><div class="folio">61</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Trevenant de Valeria</h2><div class="type-line">PLANTA · PEDRA</div><p>Trevenant de Valeria é o resultado de séculos de vida, morte e crescimento. Seu corpo tornou-se uma fusão de árvore petrificada, rocha e vegetação.</p><p>Antigas histórias dizem que alguns permanecem imóveis durante décadas, confundidos com ruínas, até que alguma ameaça perturbe a floresta sob sua proteção.</p><div class="ability"><b>Guardião Petrificado.</b> Sua estrutura pesada e enraizada permite resistir a grandes impactos enquanto protege as matas e ruínas que considera sagradas.</div><div class="field-note">“O tempo não o derrubou, apenas o enraizou mais fundo.”</div><div class="folio">62</div></div>`,
+`<div class="creature-sketch approved-v37"><img src="image_28_74361491f6fa.webp" alt="Esboços de Trevenant de Valeria"></div><div class="folio">63</div>`
+],
+[
+`<div class="creature-sketch approved-v37"><img src="image_29_bdd3cea60cde.webp" alt="Esboços de Helioptile de Valeria"></div><div class="folio">64</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Helioptile de Valeria</h2><div class="type-line">FOGO · ELÉTRICO</div><p>Helioptile de Valeria vive em planícies áridas e ruínas antigas, onde passa longos períodos aquecendo-se sobre pedras expostas ao sol.</p><p>As membranas ao redor de sua cabeça absorvem calor e luz, produzindo pequenas descargas elétricas quando estão completamente carregadas.</p><div class="ability"><b>Centelha Solar.</b> Sob luz intensa, acumula energia com rapidez e converte parte do calor absorvido em eletricidade.</div><div class="field-note">“Pequenos raios, grandes começos.”</div><div class="folio">65</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Heliolisk de Valeria</h2><div class="type-line">FOGO · ELÉTRICO</div><p>Heliolisk de Valeria domina a energia solar, acumulando luz e calor em sua ampla gola, que se abre como um disco solar.</p><p>Quando libera a energia armazenada, o ar ao redor parece ondular com o calor enquanto descargas elétricas percorrem as marcas de seu corpo.</p><div class="ability"><b>Lagarto Solar.</b> Sua gola concentra energia solar e a converte em calor e eletricidade, fortalecendo seus ataques enquanto permanece sob luz intensa.</div><div class="field-note">“O sol em movimento.”</div><div class="folio">66</div></div>`,
+`<div class="creature-sketch approved-v37"><img src="image_30_7bf362e3baef.webp" alt="Esboços de Heliolisk de Valeria"></div><div class="folio">67</div>`
+],
+[
+`<div class="creature-sketch approved-v38"><img src="image_31_6739bd3a02dc.webp" alt="Esboços de Inkay de Valeria"></div><div class="folio">68</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Inkay de Valeria</h2><div class="type-line">PSÍQUICO · FANTASMA</div><p>Inkay de Valeria vive em águas profundas e regiões costeiras marcadas por ruínas submersas. Os padrões de seu corpo lembram inscrições antigas encontradas em templos afundados.</p><p>Marinheiros afirmam que pequenos grupos podem ser vistos próximos de embarcações durante a noite, emitindo luzes suaves sob a superfície.</p><div class="ability"><b>Segredo das Profundezas.</b> Seus padrões luminosos confundem a percepção daqueles que os observam por muito tempo, como reflexos distorcidos sob a água.</div><div class="field-note">“Pequenas luzes, grandes segredos.”</div><div class="folio">69</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Malamar de Valeria</h2><div class="type-line">PSÍQUICO · FANTASMA</div><p>Malamar de Valeria é uma criatura temida por marinheiros. Vive entre ruínas submarinas e regiões tão profundas que a luz da superfície quase não alcança.</p><p>Há relatos antigos de exemplares guardando locais esquecidos, utilizando ondas psíquicas para desorientar intrusos e afastá-los de seus territórios.</p><div class="ability"><b>Arauto do Abismo.</b> Suas pulsações psíquicas alteram a percepção de direção e distância, fazendo invasores perderem a orientação nas profundezas.</div><div class="field-note">“Mais que um predador, um mensageiro do abismo.”</div><div class="folio">70</div></div>`,
+`<div class="creature-sketch approved-v38"><img src="image_32_132d0683dd0a.webp" alt="Esboços de Malamar de Valeria"></div><div class="folio">71</div>`
+],
+[
+`<div class="creature-sketch approved-v38"><img src="image_33_33e5b04e4ca0.webp" alt="Esboços de Skrelp de Valeria"></div><div class="folio">72</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Skrelp de Valeria</h2><div class="type-line">ÁGUA · DRAGÃO</div><p>Skrelp de Valeria esconde-se entre algas ancestrais que crescem sobre ruínas submersas. Seu corpo imita folhas e vegetação marinha carregadas pelas correntes.</p><p>Produz uma mucosa com propriedades dracônicas e costuma permanecer imóvel entre plantas aquáticas até que ameaças se afastem.</p><div class="ability"><b>Alga Errante.</b> Sua aparência permite desaparecer entre vegetação submarina, enquanto sua energia dracônica fortalece suas defesas em águas profundas.</div><div class="field-note">“Pequenas algas, grandes mistérios.”</div><div class="folio">73</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Dragalge de Valeria</h2><div class="type-line">ÁGUA · DRAGÃO</div><p>Dragalge de Valeria é descrito nas crônicas costeiras como um verdadeiro dragão das profundezas. Seu corpo alongado lembra um emaranhado de algas antigas.</p><p>Exemplares adultos estabelecem territórios entre cidades submersas e recifes profundos, onde permanecem quase invisíveis entre a vegetação.</p><div class="ability"><b>Dragão das Profundezas.</b> Sob chuva ou em águas profundas, suas escamas e extensões folhosas canalizam energia dracônica com maior intensidade.</div><div class="field-note">“Um dragão que habita o silêncio.”</div><div class="folio">74</div></div>`,
+`<div class="creature-sketch approved-v38"><img src="image_34_3cdaf3ec56e8.webp" alt="Esboços de Dragalge de Valeria"></div><div class="folio">75</div>`
+],
+[
+`<div class="creature-sketch approved-v39"><img src="image_35_0299ca41f8b0.webp" alt="Esboços de Bergmite de Valeria"></div><div class="folio">76</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Bergmite de Valeria</h2><div class="type-line">GELO · FOGO</div><p>Bergmite de Valeria é encontrado nas fronteiras entre montanhas geladas e regiões vulcânicas. Seu corpo mineral permanece frio na superfície, embora calor intenso circule em seu interior.</p><p>Pequenas fissuras entre suas placas rochosas brilham quando acumula energia, produzindo vapor ao entrar em contato com neve e gelo.</p><div class="ability"><b>Núcleo Termal.</b> Seu corpo conserva simultaneamente frio e calor, permitindo resistir às mudanças extremas de temperatura das montanhas de Valoria.</div><div class="field-note">“Entre gelo e fogo, a pedra permanece.”</div><div class="folio">77</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Avalugg de Valeria</h2><div class="type-line">GELO · FOGO</div><p>Avalugg de Valeria é uma colossal massa de pedra, gelo e calor subterrâneo. Grandes placas congeladas cobrem sua carapaça enquanto fissuras quentes atravessam a rocha abaixo.</p><p>Viajantes contam que sua passagem pode deixar neve derretida de um lado da trilha e uma camada de gelo recém-formada do outro.</p><div class="ability"><b>Fortaleza Vulcânica.</b> Sua enorme carapaça alterna entre liberar calor e congelar rapidamente a umidade ao redor, tornando-o extremamente difícil de derrubar.</div><div class="field-note">“Montanhas caminham mais devagar, mas não recuam.”</div><div class="folio">78</div></div>`,
+`<div class="creature-sketch approved-v39"><img src="image_36_5eff917fb78e.webp" alt="Esboços de Avalugg de Valeria"></div><div class="folio">79</div>`
+],
+[
+`<div class="creature-sketch approved-v39"><img src="image_37_d0b78109dc0e.webp" alt="Esboços de Honedge de Valeria"></div><div class="folio">80</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Honedge de Valeria</h2><div class="type-line">FANTASMA · FOGO</div><p>Honedge de Valeria é associado a antigas espadas de cavaleiros que tombaram em batalha. Histórias afirmam que uma chama permanece presa ao metal mesmo séculos depois.</p><p>Sua lâmina exala calor constante e é envolvida por um tecido queimado que se move como se ainda respondesse aos gestos de seu antigo portador.</p><div class="ability"><b>Lâmina Abandonada.</b> A chama espectral que percorre a espada intensifica seus cortes e não se apaga facilmente por meios comuns.</div><div class="field-note">“Mesmo caída, sua chama ainda vigia.”</div><div class="folio">81</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Doublade de Valeria</h2><div class="type-line">FANTASMA · FOGO</div><p>Doublade de Valeria surge quando duas lâminas marcadas pela mesma energia espectral passam a agir como uma única criatura.</p><p>As espadas lutam em perfeita sincronia, alternando golpes e defesas como guerreiros que treinaram lado a lado durante toda a vida.</p><div class="ability"><b>Lâminas Juramentadas.</b> Quando as duas espadas atacam em sequência, suas chamas se fortalecem mutuamente e tornam seus movimentos difíceis de interromper.</div><div class="field-note">“Duas almas, um mesmo juramento.”</div><div class="folio">82</div></div>`,
+`<div class="creature-sketch approved-v39"><img src="image_38_8ce5040451ab.webp" alt="Esboços de Doublade de Valeria"></div><div class="folio">83</div>`
+],
+[
+`<div class="creature-sketch approved-v39"><img src="image_39_ee22599631a9.webp" alt="Esboços de Aegislash de Valeria"></div><div class="folio">84</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Aegislash de Valeria</h2><div class="type-line">FANTASMA · FOGO</div><p>Aegislash de Valeria aparece em registros como um tesouro ligado à antiga realeza. Sua lâmina e escudo carregam símbolos usados pelos primeiros soberanos de Valoria.</p><p>A chama que envolve seu corpo nunca parece se extinguir completamente, mesmo quando permanece imóvel por longos períodos.</p><div class="ability"><b>Brasão da Realeza.</b> Alterna entre uma postura defensiva protegida pelo escudo e uma forma ofensiva em que concentra sua chama espectral na lâmina.</div><div class="field-note">“O reino pode ruir, mas sua chama jamais se apaga.”</div><div class="folio">85</div></div>`
+],
+[
+`<div class="creature-sketch approved-v40"><img src="image_40_904606453aad.webp" alt="Esboços de Noibat de Valeria"></div><div class="folio">86</div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Noibat de Valeria</h2><div class="type-line">DRAGÃO · FANTASMA</div><p>Noibat de Valeria habita castelos abandonados, catacumbas e torres em ruínas. Suas enormes orelhas, marcadas por padrões semelhantes a vitrais, captam ecos que outros Pokémon dificilmente perceberiam.</p><p>Alguns estudiosos acreditam que esses ecos carregam fragmentos de sons antigos, razão pela qual Noibat costuma permanecer próximo de construções esquecidas.</p><div class="ability"><b>Eco das Ruínas.</b> Suas orelhas percebem vibrações quase imperceptíveis e permitem localizar movimentos mesmo através de paredes antigas e corredores escuros.</div><div class="field-note">“Pequenas asas, grandes memórias.”</div><div class="folio">87</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO III</div><h2>Noivern de Valeria</h2><div class="type-line">DRAGÃO · FANTASMA</div><p>Noivern de Valeria é considerado um guardião dos céus e das ruínas antigas. Suas asas e enormes orelhas apresentam padrões que lembram vitrais de antigas catedrais.</p><p>Ao voar sobre fortalezas abandonadas, produz ondas sonoras profundas que ressoam pelas pedras. Há relatos de exemplares protegendo locais sagrados e expulsando invasores.</p><div class="ability"><b>Senhor dos Ecos.</b> Manipula vibrações e ondas sonoras com extrema precisão, utilizando os ecos do ambiente para localizar ameaças e desorientar adversários.</div><div class="field-note">“O passado tem asas, e ainda nos observa.”</div><div class="folio">88</div></div>`,
+`<div class="creature-sketch approved-v40"><img src="image_41_eb8d7b5e5101.webp" alt="Esboços de Noivern de Valeria"></div><div class="folio">89</div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO IV</div><h2>Dos Vínculos</h2><div class="epigraph">“Uma criatura pode obedecer por medo. Pode lutar por necessidade. Mas apenas aquela que confia escolherá permanecer ao seu lado.”</div><h3>Do Juramentado</h3><p>Em Valoria, dá-se o nome de <b>Vínculo</b> à relação formada entre um Pokémon e aquele que ele reconhece como seu <b>Juramentado</b>.</p><p>Um Juramentado não é simplesmente o proprietário de um Pokémon. O título pertence àqueles que conquistaram a confiança de uma criatura e foram, de alguma maneira, aceitos por ela. Assim, o Vínculo não nasce de um contrato escrito, de sangue nobre ou de autoridade. Ele nasce da convivência.</p><p>Pode começar com alimento oferecido a uma criatura ferida, anos trabalhando juntos nos campos, uma batalha sobrevivida lado a lado ou até mesmo um encontro aparentemente insignificante. Não existe uma única maneira conhecida de formar um Vínculo.</p><div class="folio">90</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO IV</div><h3>Da Natureza do Vínculo</h3><p>Não existem dois Vínculos exatamente iguais.</p><p>Alguns Pokémon tratam seus Juramentados como companheiros. Outros como membros de sua família, líderes de seu grupo ou até indivíduos que devem proteger. Da mesma forma, cada Juramentado desenvolve sua própria maneira de compreender a criatura que o acompanha.</p><p>Com o passar do tempo, essa relação pode tornar-se extraordinariamente profunda. Pokémon e Juramentado começam a compreender pequenos gestos um do outro. Ordens tornam-se desnecessárias. Movimentos em combate parecem acontecer em conjunto.</p><p>Em casos particularmente raros, estudiosos registraram fenômenos nos quais a própria força de um Pokémon parece responder às emoções ou à determinação de seu Juramentado.</p><div class="folio">91</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO IV</div><h3>Da Escolha</h3><p>É a esses fenômenos que estudiosos valerianos atribuem a verdadeira natureza dos <b>Vínculos</b>.</p><p>Por esse motivo, antigos naturalistas rejeitam a ideia de que Pokémon sejam simplesmente criaturas que podem ser possuídas.</p><div class="epigraph">Um Pokémon pode ser capturado.<br>Pode ser treinado.<br>Pode até ser obrigado a obedecer.<br><br><b>Mas um Vínculo jamais pode ser imposto.</b></div><p>E entre os estudiosos de Valoria permanece uma questão para a qual ainda não existe resposta:</p><div class="field-note">“O Juramentado escolhe seu Pokémon… ou é o Pokémon quem escolhe seu Juramentado?”</div><div class="folio">92</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO IV</div><h3>Nota do Naturalista</h3><p>O Vínculo não deve ser confundido com obediência. Uma criatura treinada pode responder a comandos sem depositar confiança naquele que os pronuncia.</p><p>Entre um Pokémon e seu Juramentado, porém, existe escolha mútua. É dessa escolha que nasce a verdadeira parceria.</p><p>Quanto mais profunda se torna essa relação, mais natural parece a cooperação entre ambos — como se dois indivíduos distintos aprendessem, pouco a pouco, a agir segundo uma mesma intenção.</p><div class="field-note">“Confiança não se ordena. Conquista-se.”</div><div class="folio">93</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h2>Da Arte do Combate</h2><div class="epigraph">“Não existe um único modo correto de lutar. Cada criatura transforma seus instintos, seu corpo e sua natureza em uma arma diferente.”</div><h3>Da Regra Fundamental</h3><p>Em combate, os Pokémon não estão presos a listas rígidas de golpes. O Juramentado descreve aquilo que seu companheiro tenta realizar e o Mestre determina qual atributo, dificuldade e categoria melhor representam a ação.</p><div class="ability"><b>Rolagem-base.</b> Todo teste de combate segue a fórmula <b>Xd6 + Y</b>. <b>X</b> é o Nível do Pokémon e <b>Y</b> é o atributo utilizado.</div><p>Assim, um Pokémon de Nível 3 com Força 4 realiza um ataque físico rolando <b>3d6 + 4</b>.</p><div class="folio">94</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Dos Atributos em Combate</h3><p><b>Força — Ataques Físicos.</b> Utilizada quando o golpe depende principalmente do corpo: socos, mordidas, chifradas, cortes, investidas e ações semelhantes.</p><p><b>Espírito — Ataques Especiais.</b> Utilizado quando o Pokémon manifesta ou controla sua energia: fogo, água, eletricidade, poderes psíquicos, energia espectral e fenômenos semelhantes.</p><p><b>Agilidade — Iniciativa.</b> No início do confronto, cada Pokémon rola <b>Nível d6 + Agilidade</b>. Os maiores resultados agem primeiro.</p><div class="field-note">A natureza da ação determina o atributo — não apenas o tipo elemental do Pokémon.</div><div class="folio">95</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Do Acerto e da Esquiva</h3><p>Após declarar o golpe, realiza-se a rolagem de ataque correspondente. Para atingir o alvo, o resultado precisa <b>superar a Esquiva</b> do Pokémon defensor.</p><div class="ability"><b>Ataque físico:</b> Nível d6 + Força.<br><b>Ataque especial:</b> Nível d6 + Espírito.</div><p>Se o resultado for igual ou inferior à Esquiva, o defensor evita o golpe. Em caso de empate, portanto, a vantagem pertence à defesa.</p><h3>Do Bloqueio</h3><p>Em vez de tentar esquivar, o Pokémon pode decidir <b>bloquear</b>. Nesse caso, ele aceita o impacto e utiliza sua <b>RD — Redução de Dano</b>.</p><p>O valor de RD é subtraído do dano causado pelo golpe. Assim, esquivar pode evitar todo o dano, enquanto bloquear oferece uma defesa mais segura contra ataques difíceis de evitar.</p><div class="folio">96</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Do Contra-Ataque</h3><p>O <b>Contra-Ataque</b> é uma ação de defesa e deve ser declarado no momento em que o Pokémon é escolhido como alvo de um ataque, antes que o confronto seja resolvido.</p><p>Em vez de Esquivar ou Bloquear, o defensor responde imediatamente com um golpe próprio. Atacante e contra-atacante realizam suas respectivas rolagens de ataque, utilizando <b>Nível d6 + Força</b> para ações físicas ou <b>Nível d6 + Espírito</b> para ações especiais, incluindo quaisquer modificadores de complexidade.</p><p>Os dois resultados são comparados diretamente.</p><div class="ability"><b>Se o Contra-Atacante vencer:</b> seu golpe interrompe ou desvia parte da ofensiva inimiga. O ataque original não causa dano, e o dano do Contra-Ataque é <b>reduzido pela metade</b>.<br><br><b>Se o Atacante vencer:</b> ele sobrepuja a resposta defensiva. O Contra-Ataque falha e o golpe original causa seu <b>dano normal</b>.</div><p>Em caso de empate, nenhum dos dois consegue sobrepujar o outro e os golpes se anulam.</p><div class="field-note">Contra-atacar troca a segurança da defesa por uma oportunidade de virar a ofensiva contra o agressor.</div><div class="folio">97</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Das Categorias de Dano</h3><p>O dano não depende de uma lista fixa de movimentos. Ele é determinado pela <b>dificuldade, potência e complexidade</b> daquilo que o Pokémon tenta realizar.</p><p><b>I — Simples · 1d6.</b> Golpes naturais e diretos: soco, bicada, arranhão, cabeçada ou pancada com a cauda.</p><p><b>II — Técnica · 2d6.</b> Ações que combinam técnica ou uma manifestação simples de poder: punho em chamas, chicote de vinha ou pequena rajada de água.</p><p><b>III — Complexa · 3d6.</b> Manipulação clara de energia: bola de fogo, raio elétrico, lâmina de água ou rajada espectral.</p><p><b>IV — Avançada · 4d6.</b> Técnicas poderosas, de grande controle ou preparação: coluna de fogo, onda massiva ou descarga elétrica extensa.</p><p><b>V — Extrema · 5d6.</b> Técnicas excepcionais e difíceis, capazes de alterar profundamente o confronto.</p><div class="folio">100</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Da Complexidade</h3><p>Quanto mais extraordinário o golpe, maior o dano possível — mas também maior a dificuldade para executá-lo corretamente.</p><div class="ability"><b>Categoria I:</b> sem penalidade.<br><b>Categoria II:</b> −1 na rolagem de ataque.<br><b>Categoria III:</b> −2 na rolagem de ataque.<br><b>Categoria IV:</b> −3 na rolagem de ataque.<br><b>Categoria V:</b> −4 na rolagem de ataque.</div><p>Essas penalidades são aplicadas ao resultado de <b>Nível d6 + Força</b> ou <b>Nível d6 + Espírito</b> antes de compará-lo à Esquiva.</p><p>O Mestre determina a categoria considerando aquilo que foi descrito. Um simples soco pode ser Categoria I; envolver o punho em fogo pode elevá-lo à II; concentrar e lançar uma grande esfera de chamas pode alcançar a III.</p><div class="field-note">Quanto maior a ambição do golpe, maior sua recompensa — e maior o risco de falhar.</div><div class="folio">98</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO V</div><h3>Da Sequência de Combate</h3><p><b>1.</b> No início do confronto, determine a iniciativa com <b>Nível d6 + Agilidade</b>.</p><p><b>2.</b> Em seu turno, o Juramentado descreve a ação de seu Pokémon.</p><p><b>3.</b> O Mestre define se o ataque utiliza <b>Força</b> ou <b>Espírito</b> e determina sua Categoria de Dano.</p><p><b>4.</b> O defensor escolhe sua reação: <b>Esquiva</b>, <b>Bloqueio</b> ou <b>Contra-Ataque</b>.</p><p><b>5.</b> Na Esquiva, o atacante precisa superar o valor defensivo. No Bloqueio, o golpe é recebido e a <b>RD</b> reduz o dano.</p><p><b>6.</b> No Contra-Ataque, atacante e defensor fazem rolagens opostas. Se o defensor vencer, causa metade do dano de seu golpe; se o atacante vencer, causa seu dano normal.</p><p><b>7.</b> Resolva o dano da categoria correspondente e aplique quaisquer reduções.</p><div class="field-note">O sistema recompensa descrição e criatividade: o jogador diz o que deseja fazer; as regras determinam o risco e o efeito.</div><div class="folio">99</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO VI</div><h2>O Vínculo de Juramento</h2><div class="epigraph">“Há ordens que são gritadas. Outras jamais precisam ser pronunciadas.”</div><p>Entre todos os mistérios estudados pelos naturalistas de Valoria, poucos são tão difíceis de registrar quanto aquilo que ocorre quando um Juramentado e seu Pokémon passam a compreender um ao outro para além de palavras ou gestos.</p><p>A essa harmonia dá-se o nome de <b>Sincronia</b>. Ela não representa domínio sobre uma criatura, mas a força momentânea da confiança existente entre ambos.</p><p>Em momentos decisivos, essa confiança pode ser consumida para realizar feitos conhecidos como <b>Técnicas de Juramento</b>. Quanto mais extraordinário o feito, maior a Sincronia necessária.</p><div class="field-note">Sincronia não é poder acumulado. É confiança transformada em ação.</div><div class="folio">100</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO VI</div><h3>Técnicas de Juramento</h3><p><b>1 — Ordem Instintiva.</b> Às vezes o gesto acontece antes da ordem. Ao gastar <b>1 ponto de Sincronia</b>, o Pokémon pode mover-se imediatamente sem consumir seus PA, como se tivesse compreendido a intenção do Juramentado antes mesmo que ela fosse expressa.</p><p><b>2 — Ataque Coordenado.</b> Por <b>2 pontos de Sincronia</b>, Pokémon e Juramentado encontram o instante exato para atacar. O Pokémon recebe <b>vantagem na rolagem de ataque</b> e um pequeno bônus de dano determinado pela situação.</p><p><b>3 — Proteção Juramentada.</b> Por <b>3 pontos de Sincronia</b>, a confiança transforma-se em instinto de proteção. Pokémon ou Juramentado pode <b>interceptar um ataque destinado ao outro</b>, colocando-se entre o perigo e seu companheiro.</p><div class="folio">101</div></div>`
+],
+[
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO VI</div><h3>Além do Limite</h3><p>Há momentos em que músculos deixam de responder, a respiração pesa e até a criatura mais determinada deveria cair.</p><p>Ao gastar <b>4 pontos de Sincronia</b>, o Juramentado pode chamar seu companheiro uma última vez — e o Pokémon pode responder.</p><div class="ability"><b>4 — Além do Limite.</b> O Pokémon executa uma técnica mesmo estando exausto, ultrapassando por um breve instante aquilo que seu corpo normalmente permitiria.</div><p>Não é uma cura, tampouco apaga o cansaço. É apenas a decisão compartilhada de continuar quando recuar parecia ser a única escolha possível.</p><div class="field-note">“Só mais uma vez.” Às vezes, isso é tudo que precisa ser dito.</div><div class="folio">102</div></div>`,
+`<div class="entry creature-entry"><div class="chapter-kicker">CAPÍTULO VI</div><h3>V — Vínculo Perfeito</h3><div class="epigraph">“Por um instante, já não se sabe onde termina a vontade de um e começa a do outro.”</div><p>O <b>Vínculo Perfeito</b> é o ápice conhecido da relação entre Pokémon e Juramentado. Ao gastar <b>5 pontos de Sincronia</b>, ambos entram, durante <b>uma rodada</b>, em uma harmonia quase absoluta.</p><p>Não há transformação. Não surge uma nova forma e nenhum poder externo desperta. O que muda é a maneira como os dois agem: intenção e movimento tornam-se praticamente simultâneos.</p><div class="ability"><b>Vínculo Perfeito.</b> Durante essa rodada, o Pokémon recebe <b>uma ação adicional</b>. Além disso, uma de suas técnicas pode adquirir <b>um efeito especial relacionado à situação</b>, definido pela descrição da ação e pelo Mestre.</div><p>É raro, breve e impossível de sustentar. Mas aqueles que o testemunham compreendem por que os antigos diziam que um verdadeiro Vínculo jamais poderia ser forçado.</p><div class="folio">103</div></div>`
+],
+[
+`<div class="entry notes-entry"><div class="chapter-kicker">CAPÍTULO VII</div><h2>Registros do Viajante</h2><div class="epigraph">“Nem toda história pertence aos cronistas. Algumas devem ser escritas por aqueles que a viveram.”</div><p>Estas páginas pertencem aos três Juramentados que atravessam Valoria. Aqui podem ser registrados encontros, pistas, nomes, promessas, suspeitas, descobertas ou qualquer memória que não deva ser perdida.</p><p>Cada viajante possui seu próprio conjunto de registros. Novas folhas podem ser acrescentadas sempre que a jornada exigir.</p><div class="field-note">O que for escrito nestas páginas será preservado neste navegador.</div><div class="folio">104</div></div>`,
+`<div class="entry notes-entry player-notes" data-player="1" data-note-page="1"><div class="chapter-kicker">REGISTROS DO VIAJANTE</div><h2>Juramentado I</h2><div class="note-page-label">Folha I</div><textarea class="traveler-note" data-note-key="valoria-player-1-page-1" placeholder="Escreva aqui os registros deste Juramentado..."></textarea><div class="folio">105</div></div>`
+],
+[
+`<div class="entry notes-entry player-notes" data-player="2" data-note-page="1"><div class="chapter-kicker">REGISTROS DO VIAJANTE</div><h2>Juramentado II</h2><div class="note-page-label">Folha I</div><textarea class="traveler-note" data-note-key="valoria-player-2-page-1" placeholder="Escreva aqui os registros deste Juramentado..."></textarea><div class="folio">106</div></div>`,
+`<div class="entry notes-entry player-notes" data-player="3" data-note-page="1"><div class="chapter-kicker">REGISTROS DO VIAJANTE</div><h2>Juramentado III</h2><div class="note-page-label">Folha I</div><textarea class="traveler-note" data-note-key="valoria-player-3-page-1" placeholder="Escreva aqui os registros deste Juramentado..."></textarea><div class="folio">107</div></div>`
+],];
+let spread=-1,anim=false;
+const book=document.querySelector('#book'),cover=document.querySelector('#cover'),L=document.querySelector('#leftPage'),R=document.querySelector('#rightPage');
+function bindLinks(){document.querySelectorAll('[data-jump]').forEach(x=>x.onclick=()=>goSpread(+x.dataset.jump))}
+function render(){
+  if(spread<0){L.innerHTML='';R.innerHTML=summary;book.classList.remove('past-cover')}
+  else{L.innerHTML=spreads[spread][0];R.innerHTML=spreads[spread][1];book.classList.add('past-cover')}
+  bindLinks();
+}
+function makeTurn(front,back,reverse=false){
+  const sheet=document.createElement('div');
+  sheet.className='turn right-turn';
+  sheet.style.right='0';
+  sheet.style.transformOrigin='left center';
+  sheet.innerHTML=`<div class="face front"><div class="page-content">${front}</div></div><div class="face back"><div class="page-content">${back}</div></div>`;
+  if(reverse){sheet.style.left='0';sheet.style.right='auto';sheet.style.transform='rotateY(-180deg)';sheet.style.transformOrigin='right center'}
+  book.appendChild(sheet);return sheet;
+}
+function enterBook(target=0){
+  if(anim||target<0||target>=spreads.length)return;
+  anim=true;
+  const sheet=makeTurn(summary,spreads[target][0]);
+  requestAnimationFrame(()=>sheet.classList.add('flipping'));
+  setTimeout(()=>{spread=target;book.classList.add('past-cover');render();sheet.remove();anim=false},850);
+}
+function reverseTurn(destinationLeft,destinationRight,onDone){
+  // Ao voltar, a folha parte da página ESQUERDA e gira para a direita.
+  // É o movimento espelhado da animação de avançar.
+  const currentLeft=L.innerHTML;
+  const sheet=document.createElement('div');
+  sheet.className='turn';
+  sheet.style.left='0';
+  sheet.style.right='auto';
+  sheet.style.transformOrigin='right center';
+  sheet.style.transform='rotateY(0deg)';
+  sheet.innerHTML=`<div class="face front"><div class="page-content">${currentLeft}</div></div><div class="face back"><div class="page-content">${destinationRight}</div></div>`;
+  // A página de destino da esquerda já fica por baixo da folha que está virando.
+  L.innerHTML=destinationLeft;
+  book.appendChild(sheet);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{sheet.style.transform='rotateY(180deg)'}));
+  setTimeout(()=>{onDone();sheet.remove();anim=false},850);
+}
+function returnToFirst(){
+  if(anim||spread<0)return;
+  anim=true;
+  reverseTurn('',summary,()=>{
+    spread=-1;
+    book.classList.remove('past-cover');
+    render();
+  });
+}
+function flip(dir,target){
+  if(anim)return;
+  if(spread<0){if(dir>0||target>=0)enterBook(target??0);return}
+  if(dir<0 && spread===0 && target==null){returnToFirst();return}
+  const ns=target??spread+dir;
+  if(ns<0){returnToFirst();return}
+  if(ns>=spreads.length)return;
+  anim=true;
+  if(dir<0){
+    reverseTurn(spreads[ns][0],spreads[ns][1],()=>{spread=ns;render()});
+    return;
+  }
+  const sheet=makeTurn(R.innerHTML,spreads[ns][0]);
+  requestAnimationFrame(()=>sheet.classList.add('flipping'));
+  setTimeout(()=>{spread=ns;render();sheet.remove();anim=false},850);
+}
+function goSpread(n){if(spread<0){enterBook(n);return}if(n===spread)return;flip(n>spread?1:-1,n)}
+cover.onclick=()=>book.classList.add('open');
+cover.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();book.classList.add('open')}};
+function closeBook(){
+  if(anim)return;
+  if(spread>=0){
+    // Ao fechar a partir de um capítulo, devolve o livro à primeira folha antes da capa.
+    spread=-1;
+    book.classList.remove('past-cover');
+    render();
+  }
+  requestAnimationFrame(()=>book.classList.remove('open'));
+}
+document.querySelector('#closeBook').onclick=closeBook;
+document.querySelector('#next').onclick=()=>flip(1);
+document.querySelector('#corner').onclick=()=>flip(1);
+document.querySelector('#prev').onclick=()=>flip(-1);
+document.querySelector('#index').onclick=()=>{if(spread>=0)returnToFirst()};
+document.addEventListener('keydown',e=>{if(!book.classList.contains('open'))return;if(e.key==='ArrowRight')flip(1);if(e.key==='ArrowLeft')flip(-1);if(e.key==='Escape')closeBook()});
+render();
+
+
+function initTravelerNotes(){
+  document.querySelectorAll('.traveler-note').forEach(area=>{
+    const key=area.dataset.noteKey;
+    const saved=localStorage.getItem(key);
+    if(saved!==null) area.value=saved;
+    area.addEventListener('input',()=>localStorage.setItem(key,area.value));
+  });
+  document.querySelectorAll('.add-note-page').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const player=btn.dataset.player;
+      const countKey='valoria-player-'+player+'-count';
+      const current=parseInt(localStorage.getItem(countKey)||'1',10);
+      localStorage.setItem(countKey,String(current+1));
+      buildExtraNotePages();
+    });
+  });
+}
+function buildExtraNotePages(){
+  // Remove extras reconstruídos anteriormente.
+  document.querySelectorAll('[data-dynamic-note="true"]').forEach(el=>el.remove());
+  for(let player=1;player<=3;player++){
+    const count=parseInt(localStorage.getItem('valoria-player-'+player+'-count')||'1',10);
+    const anchor=document.querySelector('.player-notes[data-player="'+player+'"][data-note-page="1"]');
+    if(!anchor) continue;
+    for(let p=2;p<=count;p++){
+      const page=document.createElement('div');
+      page.className='entry notes-entry player-notes dynamic-note-page';
+      page.dataset.dynamicNote='true';
+      page.dataset.player=player;
+      page.dataset.notePage=p;
+      page.innerHTML='<div class="chapter-kicker">REGISTROS DO VIAJANTE</div><h2>Juramentado '+romanNumeral(player)+'</h2><div class="note-page-label">Folha '+romanNumeral(p)+'</div><textarea class="traveler-note" data-note-key="valoria-player-'+player+'-page-'+p+'" placeholder="Continue seus registros..."></textarea>';
+      anchor.parentElement.appendChild(page);
+      const area=page.querySelector('.traveler-note');
+      const saved=localStorage.getItem(area.dataset.noteKey);
+      if(saved!==null) area.value=saved;
+      area.addEventListener('input',()=>localStorage.setItem(area.dataset.noteKey,area.value));
+    }
+  }
+}
+function romanNumeral(n){return ['','I','II','III','IV','V','VI','VII','VIII','IX','X'][n]||String(n);}
+
+window.addEventListener('DOMContentLoaded',()=>{buildExtraNotePages();initTravelerNotes();});
+</script>
+</body>
+</html>
